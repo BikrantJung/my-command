@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply overflow-x-hidden;
+  }
+}
+@layer components {
+  .icon {
+    @apply h-5 w-5;
+  }
+  .input {
+    @apply border border-gray-400 p-2;
+  }
+}
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #7dd3fc;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #4995b9;
+}
