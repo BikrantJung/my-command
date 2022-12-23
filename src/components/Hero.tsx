@@ -35,7 +35,7 @@ const Hero = () => {
           npx create-react-app my-app
         </div>
         <div className="flex items-center gap-4 ">
-          {user.name ? (
+          {user.user?.name ? (
             <CreateButton />
           ) : (
             <Link href="/login" passHref>

@@ -36,12 +36,12 @@ const Command = ({ text }: CommandsProps) => {
             }}
           >
             <div className="ml-auto h-3 w-3  cursor-pointer">
-              <Image src={CopyIcon} alt="Copy Icon" />
+              <ClipboardDocumentIcon className="icon" />
             </div>
           </CopyToClipboard>
         ) : (
           <div className="ml-auto h-3 w-3  cursor-pointer">
-            <Image src={CopiedIcon} alt="Copy Icon" />
+            <ClipboardDocumentCheckIcon className="icon" />
           </div>
         )}
       </div>

@@ -1,70 +1,17 @@
+import { GetServerSideProps } from "next";
+import { getSession, signIn } from "next-auth/react";
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
 import Button from "../components/ui/Button";
-import { useRouter } from "next/router";
-import { supabase } from "../helpers/supabase";
-import Toast from "../components/ui/Toast";
 import { useUserStore } from "../store/userStore";
-type toastType = "error" | "warning" | "success";
 
 const LoginPage = () => {
   const setUser = useUserStore((state) => state.setUser);
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [toastType, setToastType] = useState<toastType>("error");
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (error) {
-        setError("");
-      }
-    }, 5000);
-    return () => clearTimeout(timeout);
-  }, [error]);
-  async function handleUserLogin(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
 
-    if (!email || !password) {
-      setToastType("warning");
-      setError("All fields are required");
-      return;
-    }
-    if (password.length < 8) {
-      setToastType("warning");
-      setError("Password should be at least 8 characters");
-
-      return;
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      setToastType("error");
-      setError(error.message);
-      return;
-    }
-    console.log("Logged in Data", data.user);
-    const userData = {
-      email: data.user?.email || "",
-      name: data.user?.email?.split("@")[0] || "",
-    };
-    setEmail("");
-    setPassword("");
-    setError("");
-    setUser(userData);
-    router.replace("/");
-  }
   return (
     <div className="align-center flex min-h-screen justify-center ">
-      <form
-        onSubmit={handleUserLogin}
-        className="flex  flex-col items-start justify-center gap-4 "
-      >
+      <div className="flex  flex-col items-start justify-center gap-4 ">
         <h1 className="w-full text-center font-serif text-3xl">Login</h1>
-        <Button intent={"neutral"} width="full">
+        <Button intent={"neutral"} width="full" onClick={() => signIn()}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"
@@ -90,39 +37,8 @@ const LoginPage = () => {
           </svg>
           <p>Continue with Google</p>
         </Button>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="email" className="text-gray-800">
-            Email:
-          </label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Email address"
-            className="input"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="password" className="text-gray-800">
-            Password:
-          </label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Password"
-            className="input"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <Button type="submit" width={"full"} intent="secondary">
-          Login
-        </Button>
+
         <div className="flex w-full flex-col items-center gap-2">
-          <p className="cursor-pointer text-sm text-gray-600 underline hover:text-gray-900">
-            Forgot password?
-          </p>
           <p className=" text-sm text-gray-600 ">
             Not a member?{" "}
             <Link href="signup">
@@ -132,10 +48,27 @@ const LoginPage = () => {
             </Link>
           </p>
         </div>
-      </form>
-      <Toast open={!!error} msg={error} intent={toastType} />
+      </div>
     </div>
   );
 };
 
 export default LoginPage;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  console.log("Session", session);
+  if (session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+  return {
+    props: {
+      data: "Hello",
+    },
+  };
+};

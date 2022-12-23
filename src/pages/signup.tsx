@@ -3,56 +3,11 @@ import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import Button from "../components/ui/Button";
 import Toast from "../components/ui/Toast";
-import { supabase } from "../helpers/supabase";
 type toastType = "error" | "warning" | "success";
 const SignupPage = () => {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [toastType, setToastType] = useState<toastType>("error");
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (error) {
-        setError("");
-      }
-    }, 5000);
-    return () => clearTimeout(timeout);
-  }, [error]);
-  async function handleSignup(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!email || !password) {
-      setToastType("warning");
-      setError("All fields are required");
-      return;
-    }
-    if (password.length < 8) {
-      setToastType("warning");
-      setError("Password should be at least 8 characters");
-
-      return;
-    }
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) {
-      setToastType("error");
-      setError(error.message);
-      return;
-    }
-    setEmail("");
-    setPassword("");
-    setError("");
-    router.replace("/login");
-  }
-  console.log("Main Error", Boolean(error));
   return (
     <div className="align-center flex min-h-screen justify-center ">
-      <form
-        onSubmit={handleSignup}
-        className="flex flex-col  items-start justify-center gap-4 "
-      >
+      <div className="flex flex-col  items-start justify-center gap-4 ">
         <h1 className="w-full text-center font-serif text-3xl">Register</h1>
 
         <Button intent={"neutral"} width="full">
@@ -81,37 +36,7 @@ const SignupPage = () => {
           </svg>
           <p>Continue with Google</p>
         </Button>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="email" className="text-gray-800">
-            Email:
-          </label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Email address"
-            className="input"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
 
-        <div className="flex flex-col gap-2">
-          <label htmlFor="password" className="text-gray-800">
-            Password:
-          </label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Password"
-            className="input"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        <Button width={"full"} type="submit" intent="secondary">
-          Signup
-        </Button>
         <div className="flex w-full flex-col items-center gap-2">
           <p className=" text-sm text-gray-600 ">
             Already have an account?{" "}
@@ -122,8 +47,7 @@ const SignupPage = () => {
             </Link>
           </p>
         </div>
-        <Toast open={!!error} msg={error} intent={toastType} />
-      </form>
+      </div>
     </div>
   );
 };

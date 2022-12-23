@@ -1,19 +1,24 @@
+import { Session } from "next-auth";
 import create from "zustand";
 interface IUser {
-  user: UserType;
-  setUser: (userData: UserType) => void;
+  user: Session;
+  setUser: (userData: Session) => void;
   clearUser: () => void;
 }
-type UserType = {
-  name: string;
-  email: string;
-};
-export const useUserStore = create<IUser>()((set) => ({
+
+const defaultUser: Session = {
   user: {
     email: "",
+    image: "",
     name: "",
   },
-  setUser: (userData) =>
-    set(() => ({ user: { email: userData.email, name: userData.name } })), // Sets new user
-  clearUser: () => set({ user: { email: "", name: "" } }), // Remove the user after logged out
+  expires: "",
+};
+export const useUserStore = create<IUser>()((set) => ({
+  user: defaultUser,
+  setUser: (userData: Session) =>
+    set(() => ({
+      user: userData,
+    })), // Sets new user
+  clearUser: () => set({ user: defaultUser }), // Remove the user after logged out
 }));
